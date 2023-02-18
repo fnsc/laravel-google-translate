@@ -6,12 +6,27 @@ USER root:root
 
 COPY --from=composer:latest /usr/bin/composer /usr/local/bin/composer
 
-RUN apt-get update && apt-get install git zip unzip vim -y \
+RUN apt-get update && apt-get install git zip unzip vim \
+    libzip-dev libssl-dev zlib1g-dev libicu-dev -y \
     && apt-get clean
 
 RUN pecl install xdebug \
     && docker-php-ext-enable xdebug \
+    && docker-php-ext-configure intl \
+    && docker-php-ext-install intl pcntl zip \
     && rm -rf /tmp/*
+
+RUN cd /tmp \
+  && git clone https://github.com/edenhill/librdkafka.git \
+  && cd librdkafka \
+  && ./configure \
+  && make \
+  && make install \
+  && rm -rf /tmp/*
+
+RUN pecl install rdkafka \
+  && docker-php-ext-enable rdkafka \
+  && rm -rf /tmp/*
 
 ARG UID=1000
 ARG GID=1000
