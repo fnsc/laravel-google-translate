@@ -1,4 +1,4 @@
-FROM php:8.1-fpm
+FROM php:8.2-fpm
 
 WORKDIR /var/www/html
 
@@ -25,7 +25,7 @@ RUN cd /tmp \
   && rm -rf /tmp/*
 
 RUN pecl install rdkafka \
-  && docker-php-ext-enable rdkafka \
+#  && docker-php-ext-enable rdkafka \
   && rm -rf /tmp/*
 
 ARG UID=1000
